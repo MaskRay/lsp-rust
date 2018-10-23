@@ -106,16 +106,6 @@ The explaination comes from 'rustc --explain=ID'."
                     "Cargo.toml"))
           "--release"))))
 
-(defun lsp-rust--get-root ()
-  (let (dir)
-    (unless
-	(ignore-errors
-	  (let* ((output (shell-command-to-string "cargo locate-project"))
-		 (js (json-read-from-string output)))
-	    (setq dir (cdr (assq 'root js)))))
-      (error "Couldn't find root for project at %s" default-directory))
-    (file-name-directory dir)))
-
 (define-inline lsp-rust--as-percent (fraction)
   (inline-quote (format "%d%%" (round (* ,fraction 100)))))
 
@@ -166,7 +156,7 @@ The explaination comes from 'rustc --explain=ID'."
 	  lsp-rust--handlers)
   (lsp-provide-marked-string-renderer client "rust" #'lsp-rust--render-string))
 
-(lsp-define-stdio-client lsp-rust "rust" #'lsp-rust--get-root nil
+(lsp-define-stdio-client lsp-rust "rust" nil nil
 			 :command-fn #'lsp-rust--rls-command
 			 :initialize #'lsp-rust--initialize-client)
 
